@@ -7,20 +7,75 @@ import { Team, Meta } from 'types/requests'
 
 const Wrapper = styled('div', {
   alignItems: 'center',
+  backgroundColor: '$gray1',
   display: 'flex',
   justifyContent: 'center',
   height: '100vh',
-  backgroundColor: 'Black',
-  color: 'GrayText',
 })
 
 const Content = styled('div', {
-  fontFamily: 'sans-serif',
-  fontSize: '$sm',
-  p: '$4',
+  color: '$gray11',
 })
 
+const Table = styled('table', {})
+const Head = styled('thead', {})
+const Header = styled('th', {})
 const Row = styled('tr', {})
+const Body = styled('tbody', {})
+const Data = styled('td', {})
+
+const Button = styled('button', {
+  alignItems: 'center',
+  backgroundColor: '$orange10',
+  border: 'none',
+  borderRadius: '.8rem',
+  color: '$orange2',
+  cursor: 'pointer',
+  display: 'inline-flex',
+  fontSize: 'inherit',
+  fontFamily: 'inherit',
+  fontWeight: '$bold',
+  justifyContent: 'center',
+  lineHeight: '1.1',
+  minHeight: '4.4rem',
+  minWidth: '10ch',
+  padding: '0.25em 0.75em',
+  textAlign: 'center',
+  transition: '200ms all ease-in-out',
+
+  '&:hover': {
+    backgroundColor: '$orange11',
+  },
+
+  '&:active': {
+    backgroundColor: '$orange9',
+  },
+
+  '&:disabled': {
+    backgroundColor: '$orange6',
+    color: '$orange1',
+    cursor: 'not-allowed',
+  },
+
+  '&:focus': {
+    boxShadow: '0 0 0 4px var(--colors-orange6)',
+    outlineStyle: 'solid',
+    outlineColor: 'transparent',
+  },
+
+  '@media screen and (-ms-high-contrast:active)': {
+    border: '2px solid currentColor',
+  },
+
+  variants: {
+    size: {
+      sm: {
+        fontSize: '$sm',
+        minHeight: '3.6rem',
+      },
+    },
+  },
+})
 
 const columns = [
   { Header: 'ID', accessor: 'id' },
@@ -46,7 +101,7 @@ const fetchTeams = async ({ page = 1, limit = 5 }) => {
 const Teams = () => {
   const [{ pageIndex, pageSize }, setPagination] = useState({
     pageIndex: 0,
-    pageSize: 7,
+    pageSize: 5,
   })
 
   const fetchOptions = {
@@ -98,19 +153,25 @@ const Teams = () => {
     prepareRow,
   } = instance
 
+  const handleAddPage = () =>
+    setPagination((old) => ({ ...old, pageIndex: pageIndex + 1 }))
+
+  const handleRemovePage = () =>
+    setPagination((old) => ({ ...old, pageIndex: Math.max(pageIndex - 1, 0) }))
+
   return (
     <Wrapper>
       <Content>
         {dataQuery.isLoading ? (
           <p>Loading data...</p>
         ) : (
-          <table {...getTableProps()}>
-            <thead>
+          <Table {...getTableProps()}>
+            <Head>
               {headerGroups.map((headerGroup, index) => (
                 <Row {...headerGroup.getHeaderGroupProps()} key={index}>
                   {headerGroup.headers.map((header) => (
                     // eslint-disable-next-line react/jsx-key
-                    <th
+                    <Header
                       {...header.getHeaderProps(header.getSortByToggleProps())}
                     >
                       {header.render('Header')}
@@ -121,51 +182,44 @@ const Teams = () => {
                             : ' 🔼'
                           : ''}
                       </span>
-                    </th>
+                    </Header>
                   ))}
                 </Row>
               ))}
-            </thead>
+            </Head>
 
-            <tbody {...getTableBodyProps()}>
+            <Body {...getTableBodyProps()}>
               {page.map((row) => {
                 prepareRow(row)
                 return (
                   <Row {...row.getRowProps()} key={row.id}>
                     {row.cells.map((cell, index) => (
-                      <td {...cell.getCellProps()} key={index}>
+                      <Data {...cell.getCellProps()} key={index}>
                         {cell.render('Cell')}
-                      </td>
+                      </Data>
                     ))}
                   </Row>
                 )
               })}
-            </tbody>
-          </table>
+            </Body>
+          </Table>
         )}
 
         <div style={{ display: 'flex', gap: 16, marginTop: 16 }}>
-          <button
+          <Button
             disabled={!canPreviousPage}
-            onClick={() =>
-              setPagination(
-                (old) =>
-                  (old = { ...old, pageIndex: Math.max(pageIndex - 1, 0) }),
-              )
-            }
+            onClick={handleRemovePage}
+            size='sm'
           >
-            Previous Page
-          </button>
-          <button
+            Previous
+          </Button>
+          <Button
             disabled={!canNextPage || !dataQuery.data?.data}
-            onClick={() =>
-              setPagination(
-                (old) => (old = { ...old, pageIndex: pageIndex + 1 }),
-              )
-            }
+            onClick={handleAddPage}
+            size='sm'
           >
-            Next Page
-          </button>
+            Next
+          </Button>
         </div>
 
         <hr style={{ margin: '16px 0' }} />

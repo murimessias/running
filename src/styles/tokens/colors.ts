@@ -1,3 +1,6 @@
+import { grayDark, orangeDark } from '@radix-ui/colors'
+
 export const colors = {
-  black: 'red',
+  ...grayDark,
+  ...orangeDark,
 }

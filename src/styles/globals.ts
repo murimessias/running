@@ -18,4 +18,9 @@ export const globalStyles = globalCss({
   'html, body, #__next': {
     minHeight: '100%',
   },
+
+  body: {
+    fontSize: 'var(--fontSizes-md)',
+    fontFamily: 'sans-serif',
+  },
 })
